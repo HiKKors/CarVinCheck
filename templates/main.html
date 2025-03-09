@@ -28,11 +28,124 @@
 </header>
 <main>
     <div class="container">
-        <div class="vin-input">
-            <form action="post">
-                
-            </form>
-        </div>
+        <form method="POST">
+            {{ form.hidden_tag() }}  {# CSRF-токен #}
+            <p>{{ form.vin.label }} {{ form.vin(size=20) }}</p>
+            <p>{{ form.submit() }}</p>
+        </form>
+
+        {% if result %}
+            <!-- <h2>Результат запроса</h2>
+            <p><strong>HTTP Status:</strong> {{ result.status }}</p> -->
+
+            <div class="main_car_data">
+                <h2>Сведения об автомобиле</h2>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>VIN:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="vin">{{ result.get('vin') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Номер кузова:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="body_num">{{ result.get('bodyNumber') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Вид ТС:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="type">{{ result.get('type') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Марка, модель:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="model">{{ result.get('model') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Категория:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="category">{{ result.get('category') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Год выпуска:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="year">{{ result.get('year') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Номер двигателя:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="engine_num">{{ result.get('engineNumber') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Мощность (кВт/л.с.):</h4>
+                    </div>
+                    <div class="value">
+                        <p class="power">{{ result.get('powerKwt') | safe }}/{{ result.get('powerHp') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Объем двигателя:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="capacity">{{ result.get('engineVolume') | safe }}</p>
+                    </div>
+                </div>
+                <div class="main_car_data_item">
+                    <div class="param">
+                        <h4>Тип ТС:</h4>
+                    </div>
+                    <div class="value">
+                        <p class="car_type">{{ result.get('typeinfo') | safe }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ownership_periods">
+                <h2>Периоды владения</h2>
+                {% for period in ownership_periods %}
+                    <div class="registration">
+                        <div class="from-to">
+                            {% if period.get('to') == "null" %}
+                                <p>c {{ period.get('from') }} по настоящее время</p>
+                            {% else %}
+                                <p>c {{ period.get('from') }} по {{ period.get('to') }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="period_sum">
+                            <p>{{ period.get('period') }}</p>
+                        </div>
+                        <div class="person_info">
+                            <p>{{ period.get('simplePersonTypeInfo') }}</p>
+                        </div>
+                        <div class="operation_info">
+                            <p>{{ period.get('lastOperationInfo') }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </main>
 </body>
