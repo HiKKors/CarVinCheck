@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Header</title>
     <link rel="stylesheet" href="static/main.css">
+    <link rel="stylesheet" href="static/photos_style.css">
+    <script src="static/photo_view.js" defer></script>
+    <script src="static/script.js" defer></script>
 </head>
-<body>
-
 <header>
-    <div class="container">
+    <div class="header_container">
         <div class="logo">
             <span>AUTO</span>UNI HUB
         </div>
@@ -26,6 +27,7 @@
         </div>
     </div>
 </header>
+<body>
 <main>
     <div class="container">
         <form method="POST">
@@ -34,12 +36,34 @@
             <p>{{ form.submit() }}</p>
         </form>
 
+        <!-- Индикатор загрузки -->
+        <div id="loading" class="hidden">
+            <p>Загрузка данных...</p>
+            <div class="spinner"></div>
+        </div>
+
         {% if result %}
-            <!-- <h2>Результат запроса</h2>
-            <p><strong>HTTP Status:</strong> {{ result.status }}</p> -->
+            <div class="photos_title">
+                <h2>Фото ТС</h2>
+            </div>
+            <div class="photos" style="margin-top: 15 px; margin-bottom: 15 px;">
+                {% for photo in photos_list %}
+                    <div class="car_photo">
+                        <img src="{{ photo }}" width="400" height="400" alt="car_photo" onclick="openFullscreen(this)">
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Модальное окно -->
+            <div id="fullscreenModal" class="modal" onclick="closeFullscreen()">
+                <span class="close-btn" onclick="closeFullscreen()">&#10006;</span>
+                <img id="fullscreenImg" class="modal-content">
+            </div>
 
             <div class="main_car_data">
-                <h2>Сведения об автомобиле</h2>
+                <div class="main_car_data_title">
+                    <h2>Сведения об автомобиле</h2>
+                </div>
                 <div class="main_car_data_item">
                     <div class="param">
                         <h4>VIN:</h4>
@@ -123,30 +147,273 @@
             </div>
             
             <div class="ownership_periods">
-                <h2>Периоды владения</h2>
-                {% for period in ownership_periods %}
+                <div class="ownership_periods_title">
+                    <h2>Периоды владения</h2>
+                </div>
+                {% for period in range(ownership_periods|length) %}
                     <div class="registration">
                         <div class="from-to">
-                            {% if period.get('to') == "null" %}
-                                <p>c {{ period.get('from') }} по настоящее время</p>
+                            {% if ownership_periods[period].get('to') == "null" %}
+                                <h5>{{period+1}}. c {{ ownership_periods[period].get('from') }} по настоящее время</h5>
                             {% else %}
-                                <p>c {{ period.get('from') }} по {{ period.get('to') }}</p>
+                                <h5>{{period+1}}. c {{ ownership_periods[period].get('from') }} по {{ ownership_periods[period].get('to') }}</h5>
                             {% endif %}
                         </div>
                         <div class="period_sum">
-                            <p>{{ period.get('period') }}</p>
+                            <p>{{ ownership_periods[period].get('period') }}</p>
                         </div>
                         <div class="person_info">
-                            <p>{{ period.get('simplePersonTypeInfo') }}</p>
+                            <p>{{ ownership_periods[period].get('simplePersonTypeInfo') }}</p>
                         </div>
                         <div class="operation_info">
-                            <p>{{ period.get('lastOperationInfo') }}</p>
+                            <p>{{ ownership_periods[period].get('lastOperationInfo') }}</p>
                         </div>
                     </div>
                 {% endfor %}
             </div>
+            
+            <div class="car_to">
+                <div class="car_to_title">
+                    <h2>История техосмотров и пробега</h2>
+                </div>
+                <div class="car_to_info">
+                    {% if TO_data == 'Данные о диагностических картах не найдены' %}
+                    <p>{{ TO_data }}</p>
+                    {% else %}
+                        {% for to in TO_data %}
+                            <div class="to_record">
+                                <div class="to_record_info">
+                                    <div class="value">
+                                        <p>{{ to.get('dcDate') }}</p>
+                                    </div>
+                                </div>
+                                <div class="to_record_info">
+                                    <div class="param">
+                                        <h4>Пробег:</h4>
+                                    </div>
+                                    <div class="value">
+                                        <p>{{ to.get('odometerValue') }} км</p>
+                                    </div>
+                                </div>
+                                <div class="to_record_info">
+                                    <div class="param">
+                                        <h4>Номер диагностической карты:</h4>
+                                    </div>
+                                    <div class="value">
+                                        <p>{{ to.get('dcNumber') }}</p>
+                                    </div>
+                                </div>
+                                <div class="to_record_info">
+                                    <div class="param">
+                                        <h4>Действительно до:</h4>
+                                    </div>
+                                    <div class="value">
+                                        <p>{{ to.get('dcExpirationDate') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="lizing">
+                <div class="lizing_title">
+                    <h2>Проверка на лизинг</h2>
+                </div>
+                <div class="lizing_info">
+                    {% if lizing == 'Авто в базе лизинга не найдено' %}
+                        <p style="margin-top: 10px; color: green;">{{ lizing }}</p>
+                    {% else %}
+                        <div class="lizing_item">
+                            <div class="param">
+                                <h4>№ записи:</h4>
+                            </div>
+                            <div class="value">
+                                <p>{{ lizing.get('id') }}</p>
+                            </div>
+                        </div>
+                        <div class="lizing_item">
+                            {% set regDate = lizing.get('regDate').split('T')[0] %}
+                            <div class="param">
+                                <h4>Дата публикации:</h4>
+                            </div>
+                            <div class="value">
+                                <p>{{ regDate }}</p>
+                            </div>
+                        </div>
+                        <div class="lizing_item">
+                            <div class="param">
+                                <h4>Лизингополучатель:</h4>
+                            </div>
+                            <div class="value">
+                                <p>{{ lizing.get('pledgors').get('privatePerson').get('name') }} {{ lizing.get('pledgors').get('privatePerson').get('birthday') }}</p>
+                            </div>
+                        </div>
+                        <div class="lizing_item">
+                            <div class="param">
+                                <h4>Лизингодатель:</h4>
+                            </div>
+                            <div class="value">
+                                <p>{{ lizing.get('pledgees').get('organization').get('name') }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="restrict">
+                <div class="restrict_title">
+                    <h2>Наличие ограничений</h2>
+                </div>
+                <div class="restrict_info">
+                    <p style="margin-top: 10px; color: green;">{{ restrict.get('message') }}</p>
+                </div>
+            </div>
+            <div class="wanted">
+                <div class="wanted_title">
+                    <h2>Проверка на розыск</h2>
+                </div>
+                <div class="wanted_info">
+                    {% if wanted == 'В розыске не найдено' %}
+                        <p style="margin-top: 10px; color: green;">{{ wanted }}</p>
+                    {% else %}
+                    <div class="wanted_item">
+                        <div class="param">
+                            <h4>Регион инициатора розыска:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ wanted.get('w_reg_inic') }}</p>
+                        </div>
+                    </div>
+                    <div class="wanted_item">
+                        <div class="param">
+                            <h4>Дата постоянного учета в розыске:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ wanted.get('w_data_pu') }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="dtp">
+                <div class="dtp_title">
+                    <h2>Информация о ДТП</h2>
+                </div>
+                {% if dtps == 'ДТП не найдены' %}
+                    <p style="margin-top: 10px; color: green;">{{ dtps }}</p>
+                {% else %}
+                    <p>{{ dtp_count }}</p>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>№ происшествия:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('AccidentNumber') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Марка:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('VehicleMark') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Модель:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('VehicleModel') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Год выпуска:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('VehicleYear') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Состояние ТС:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('VehicleDamageState') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Место происшествия:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('AccidentPlace') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Дата и время:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('AccidentDateTime') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Описание повреждений:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('DamageDestription') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Тип происшествия:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('AccidentType') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Номер ТС в ДТП:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('VehicleSort') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>Всего ТС в ДТП:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('VehicleAmount') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_item">
+                        <div class="param">
+                            <h4>ОПФ собственника:</h4>
+                        </div>
+                        <div class="value">
+                            <p>{{ dtps.get('OwnerOkopf') }}</p>
+                        </div>
+                    </div>
+                    <div class="dtp_damage_photo">
+                        <div class="value">
+                            <object type="image/svg+xml" data="{{ dtps.get('DamagePointsSVG') }}" width="500" height="500" class="dtp_damage_image"></object>
+                        </div>
+                    </div>
+                    {% for damage_t in damage_transcript %}
+                        <p>{{ damage_t.get('damage').get('title') }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
         {% endif %}
     </div>
+
 </main>
 </body>
 </html>
