@@ -1,20 +1,33 @@
 import requests
 from config import API_KEY
+import json
+import os
+from typing import Dict, Tuple, List
+from datetime import datetime
 
-def get_car_data(vin):
+import asyncio
+import aiohttp
+
+
+URL = "https://www.apipoint.ru/api/call"
+HEADERS = {
+    "Authorization": API_KEY,
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+}
+
+SOURCES = ['gibdd', 'dtp' ,'restrict', 'wanted', 'fedresurs', 'eaisto']
+
+    
+async def get_full_car_data_async(vin):
     vin = vin.upper()
-    
-    url = "https://www.apipoint.ru/api/call"  # Используем HTTPS
-    headers = {
-        "Authorization": API_KEY,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
-    payload = {
-        "sources": "gibdd",
-        "vin": vin
-    }
 
-    response = requests.post(url, json=payload, headers=headers)
-    
-    return response.status_code, response.json()
+    async with aiohttp.ClientSession() as session:
+        result = {}
+        for source in SOURCES:
+            payload = {'sources': source, 'vin': vin}
+            response = requests.post(URL, json=payload, headers=HEADERS)
+            
+            result[source] = response.json()
+
+    return result
