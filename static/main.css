@@ -8,7 +8,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
-header {
+/* header {
     background: #fff;
     box-shadow: 0 0 14px -2px #808080;
     padding: 20px 0;
@@ -16,14 +16,37 @@ header {
     top: 0;
     z-index: 1000;
     height: 150px;
+    width: 100%;
 }
 
-.container {
+.header_container {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+} */
+
+header {
+    background: #fff;
+    box-shadow: 0 0 14px -2px #808080;
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100vw; /* Убираем отступы по бокам */
+    height: auto; /* Автоматическая высота */
+}
+
+.header_container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0 20px; /* Добавляем отступы по бокам внутри контейнера */
 }
 
 .logo {
@@ -79,4 +102,254 @@ nav ul li a.active {
     text-decoration: none;
     color: orange;
     font-weight: bold;
+}
+
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+/* Центрирование формы */
+form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 30px;
+}
+
+form p {
+    margin: 10px 0;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    background: orange;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+input[type="submit"]:hover {
+    background: darkorange;
+}
+
+/* Блок с данными об автомобиле */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Карточки с информацией */
+.main_car_data, .ownership_periods, .lizing, .dtp, .wanted, .restrict, .car_to {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Элементы данных автомобиля */
+.main_car_data_item, .dtp_item {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.to_record {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.to_record_info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.main_car_data_item:last-child {
+    border-bottom: none;
+}
+
+.main_car_data_item .param h4 {
+    font-size: 16px;
+    color: #555;
+}
+
+.main_car_data_item .value p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #222;
+}
+
+/* Периоды владения */
+.ownership_periods .registration {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.ownership_periods .registration:last-child {
+    border-bottom: none;
+}
+
+.ownership_periods p {
+    font-size: 14px;
+    color: #555;
+}
+
+.main_car_data_title, .ownership_periods_title, .lizing_title, .dtp_title, .wanted_title, .restrict_title, .car_to_title, .photos_title {
+    border-width: 2px;
+    border-bottom-width:2px;
+    border-bottom-color:orange;
+    border-bottom-style: solid;
+    width: 100%;
+}
+
+.hidden {
+    display: none;
+}
+
+#loading {
+    text-align: center;
+    margin: 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.3);
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* Общие адаптивные стили */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px 5px;
+    }
+
+    .header_container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 0 10px;
+        overflow: auto; /* Добавлено */
+    }
+
+    form {
+        width: 100%;
+        padding: 15px;
+    }
+
+    input[type="text"], input[type="submit"] {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .main_car_data, .ownership_periods, .lizing, .dtp, .wanted, .restrict, .car_to {
+        max-width: 100%;
+        padding: 20px;
+    }
+    
+    .dtp_damage_image{
+        width: 300px;
+        height: 300px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .main_car_data_item, .dtp_item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .to_record_info {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    /* Фото автомобиля: по 3 в ряд на больших экранах, по 1-2 на мобильных */
+    .photos {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .car_photo {
+        width: calc(50% - 10px); /* Два в ряд */
+    }
+
+    .car_photo img {
+        width: 100%;
+        height: auto;
+        max-width: 300px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .car_photo {
+        width: 100%; /* Один в ряд */
+    }
 }
