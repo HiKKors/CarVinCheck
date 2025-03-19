@@ -16,7 +16,7 @@ HEADERS = {
     "Accept": "application/json"
 }
 
-SOURCES = ['gibdd', 'dtp' ,'restrict', 'wanted', 'fedresurs', 'eaisto']
+SOURCES = ['gibdd', 'dtp' ,'restrict', 'wanted', 'fedresurs', 'eaisto', 'pic']
 
     
 async def get_full_car_data_async(vin):
