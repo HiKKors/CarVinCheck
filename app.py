@@ -56,9 +56,7 @@ def home():
         else: 
             wanted = data['wanted']['result'][0]['wanted']['records'][0]
         
-    with open('results.json', 'r', encoding='utf-8') as file:
-        data = json.load(file)
-        photos_list = data[1]['result'][0]['pic']['imagesList']
+        photos_list = data['pic']['imagesList'][0]['pic']['imagesList']
 
         return render_template(
             'main.html',
