@@ -56,7 +56,7 @@ def home():
         else: 
             wanted = data['wanted']['result'][0]['wanted']['records'][0]
         
-        photos_list = data['pic']['imagesList'][0]['pic']['imagesList']
+        photos_list = data['pic']['result'][0]['pic']['imageList']
 
         return render_template(
             'main.html',
