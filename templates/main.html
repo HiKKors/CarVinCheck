@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="static/photos_style.css">
     <script src="static/photo_view.js" defer></script>
     <script src="static/script.js" defer></script>
+    <script src="static/change_input.js" defer></script>
 </head>
 <header>
     <div class="header_container">
@@ -30,11 +31,42 @@
 <body>
 <main>
     <div class="container">
-        <form method="POST">
-            {{ form.hidden_tag() }}  {# CSRF-токен #}
-            <p>{{ form.vin.label }} {{ form.vin(size=20) }}</p>
-            <p>{{ form.submit() }}</p>
-        </form>
+        <div class="form-switcher">
+            <button class="active" onclick="switchForm('vin')">Поиск по VIN</button>
+            <button onclick="switchForm('body')">Поиск по номеру кузова</button>
+        </div>
+        
+        <!-- Форма для VIN -->
+        <div id="vin-form" class="form-container active">
+            <form method="POST" action="{{ url_for('check_vin') }}">
+                {{ vin_form.hidden_tag() }}
+                {% if vin_form.vin.errors %}
+                    <div class="error-message">
+                        {% for error in vin_form.vin.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <p>{{ vin_form.vin.label }} {{ vin_form.vin(size=20) }}</p>
+                <p>{{ vin_form.submit() }}</p>
+            </form>
+        </div>
+        
+        <!-- Форма для номера кузова -->
+        <div id="body-form" class="form-container">
+            <form method="POST" action="{{ url_for('check_body') }}">
+                {{ body_form.hidden_tag() }}
+                {% if body_form.bodyNumber.errors %}
+                    <div class="error-message">
+                        {% for error in body_form.bodyNumber.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <p>{{ body_form.bodyNumber.label }} {{ body_form.bodyNumber(size=20) }}</p>
+                <p>{{ body_form.submit() }}</p>
+            </form>
+        </div>
 
         <!-- Индикатор загрузки -->
         <div id="loading" class="hidden">
@@ -413,7 +445,23 @@
             </div>
         {% endif %}
     </div>
-
+    <script>
+        function switchForm(formType) {
+            // Скрыть все формы
+            document.querySelectorAll('.form-container').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Показать выбранную форму
+            document.getElementById(`${formType}-form`).classList.add('active');
+            
+            // Обновить активные кнопки
+            document.querySelectorAll('.form-switcher button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+    </script>
 </main>
 </body>
 </html>
